@@ -1,0 +1,49 @@
+version: '3.7'
+
+secrets:
+ user:
+   file: keycloak.user.passwd
+ passwd:
+   file: keycloak.passwd
+
+services:
+  nginx:
+    image: nginx
+    restart: on-failure
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/certs:ro
+    ports:
+      - "80:80"
+      - "443:443"
+
+  postgres:
+    image: postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER_FILE: /run/secrets/user
+      POSTGRES_PASSWORD_FILE: /run/secrets/passwd
+    secrets:
+      - user
+      - passwd
+
+  keycloak:
+    image: jboss/keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER_FILE: /run/secrets/user
+      DB_PASSWORD_FILE: /run/secrets/passwd
+      DB_SCHEMA: public
+      KEYCLOAK_USER_FILE: /run/secrets/user
+      KEYCLOAK_PASSWORD_FILE: /run/secrets/passwd
+      PROXY_ADDRESS_FORWARDING: "true"
+    command: ["-b", "0.0.0.0"]
+    depends_on:
+      - postgres
+    secrets:
+      - user
+      - passwd
