@@ -17,6 +17,14 @@ services:
       - "80:80"
       - "443:443"
 
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    command: server /data
+    volumes:
+      - ./bucket:/data
+
   postgres:
     image: postgres
     volumes:
