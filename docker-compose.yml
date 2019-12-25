@@ -19,11 +19,23 @@ services:
 
   minio:
     image: minio/minio
+    restart: always
     ports:
       - "9000:9000"
     command: server /data
+    environment:
+      MINIO_IDENTITY_OPENID_CLIENT_ID: test-client
+      MINIO_IDENTITY_OPENID_CONFIG_URL: https://35.238.212.153/auth/realms/master/.well-known/openid-configuration
     volumes:
       - ./bucket:/data
+      - ./certs/tls.crt:/etc/ssl/certs/keycloak.pem:ro
+    secrets:
+      - source: user
+        target: access_key
+      - source: passwd
+        target: secret_key
+    depends_on:
+      - keycloak
 
   postgres:
     image: postgres

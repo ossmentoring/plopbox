@@ -1,3 +1,5 @@
 *.passwd
 *~
 certs
+bucket
+data
