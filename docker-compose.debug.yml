@@ -1,0 +1,20 @@
+version: '3.7'
+
+secrets:
+ user:
+   file: keycloak.user.passwd
+ passwd:
+   file: keycloak.passwd
+
+services:
+  mc:
+    image: minio/mc
+    entrypoint: /bin/sh
+    command: /debug-minio.sh
+    volumes:
+      - ./debug-minio.sh:/debug-minio.sh:ro
+    secrets:
+      - source: user
+        target: access_key
+      - source: passwd
+        target: secret_key

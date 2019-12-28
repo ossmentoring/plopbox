@@ -25,7 +25,8 @@ services:
     command: server /data
     environment:
       MINIO_IDENTITY_OPENID_CLIENT_ID: test-client
-      MINIO_IDENTITY_OPENID_CONFIG_URL: https://35.238.212.153/auth/realms/master/.well-known/openid-configuration
+      MINIO_IDENTITY_OPENID_CONFIG_URL: https://${HOST}/auth/realms/master/.well-known/openid-configuration
+      MINIO_HTTP_TRACE: /dev/stdout
     volumes:
       - ./bucket:/data
       - ./certs/tls.crt:/etc/ssl/certs/keycloak.pem:ro

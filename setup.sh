@@ -1,18 +1,12 @@
 #!/bin/bash
 
+source .env
+
 echo root > keycloak.user.passwd
 openssl rand -base64 32 > keycloak.passwd
 
-if [[ -z "$C" ]]; then
-    echo -n "C: "; read C
-fi
-
-if [[ -z "$CN" ]]; then
-    echo -n "CN: "; read CN
-fi
-
-echo "C='$C' ST='$ST' L='$L' O='$O' CN='$CN'"
-
+C=US
+CN=$HOST
 
 mkdir -p certs
 openssl genrsa -out certs/tls.key 3072
