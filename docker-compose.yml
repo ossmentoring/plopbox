@@ -24,7 +24,7 @@ services:
       - "9000:9000"
     command: server /data
     environment:
-      MINIO_IDENTITY_OPENID_CLIENT_ID: test-client
+      MINIO_IDENTITY_OPENID_CLIENT_ID: account
       MINIO_IDENTITY_OPENID_CONFIG_URL: https://${HOST}/auth/realms/master/.well-known/openid-configuration
       MINIO_HTTP_TRACE: /dev/stdout
     volumes:
@@ -37,6 +37,18 @@ services:
         target: secret_key
     depends_on:
       - keycloak
+
+  mc:
+    image: minio/mc
+    entrypoint: /bin/sh
+    command: /debug-minio.sh
+    volumes:
+      - ./debug-minio.sh:/debug-minio.sh:ro
+    secrets:
+      - source: user
+        target: access_key
+      - source: passwd
+        target: secret_key
 
   postgres:
     image: postgres
