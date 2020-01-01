@@ -2,9 +2,9 @@ version: '3.7'
 
 secrets:
  user:
-   file: keycloak.user.passwd
+   file: .user.passwd
  passwd:
-   file: keycloak.passwd
+   file: .passwd
 
 services:
   nginx:
@@ -28,7 +28,6 @@ services:
       MINIO_IDENTITY_OPENID_CONFIG_URL: https://${HOST}/auth/realms/master/.well-known/openid-configuration
       MINIO_HTTP_TRACE: /dev/stdout
     volumes:
-      - ./bucket:/data
       - ./certs/tls.crt:/etc/ssl/certs/keycloak.pem:ro
     secrets:
       - source: user
@@ -52,8 +51,6 @@ services:
 
   postgres:
     image: postgres
-    volumes:
-      - ./data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER_FILE: /run/secrets/user
@@ -74,9 +71,19 @@ services:
       KEYCLOAK_USER_FILE: /run/secrets/user
       KEYCLOAK_PASSWORD_FILE: /run/secrets/passwd
       PROXY_ADDRESS_FORWARDING: "true"
+      KEYCLOAK_HOSTNAME: ${HOST}
     command: ["-b", "0.0.0.0"]
     depends_on:
       - postgres
+    secrets:
+      - user
+      - passwd
+
+  config:
+    image: python:3.7-alpine
+    command: ["python", "/config.py"]
+    volumes:
+      - ./config.py:/config.py:ro
     secrets:
       - user
       - passwd

@@ -2,8 +2,8 @@
 
 source .env
 
-echo root > keycloak.user.passwd
-openssl rand -base64 32 > keycloak.passwd
+echo root > .user.passwd
+openssl rand -base64 32 > .passwd
 
 C=US
 CN=$HOST
